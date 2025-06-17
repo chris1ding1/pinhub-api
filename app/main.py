@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.routers import links
+from app.routers import pins
 
 app = FastAPI()
-app.include_router(links.router)
+app.include_router(pins.router)
