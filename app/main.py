@@ -1,14 +1,21 @@
+"""main"""
+
 from functools import lru_cache
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.config import Settings
 from app.routers import pins, users
 
 app = FastAPI()
 
+
 @lru_cache
 def get_settings():
+    """Creating the Settings only once"""
     return Settings()
+
 
 # Set all CORS enabled origins
 if Settings.all_cors_origins:
