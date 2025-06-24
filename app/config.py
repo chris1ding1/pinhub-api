@@ -53,6 +53,18 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_ID: str | None = None
     GITHUB_CLIENT_SECRET: str | None = None
 
+    POSTMARK_ENDPOINT_URL: str = "https://api.postmarkapp.com"
+
+    @computed_field
+    @property
+    def POSTMARK_EMAIL_SINGLE(self) -> str:
+        return f"{self.POSTMARK_ENDPOINT_URL}/email"
+
+    @computed_field
+    @property
+    def POSTMARK_EMAIL_BATCH(self) -> str:
+        return f"{self.POSTMARK_ENDPOINT_URL}/email/batch"
+
     POSTMARK_TOKEN: str | None = None
 
     PAGE_SIZE: int = 20
