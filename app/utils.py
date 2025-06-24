@@ -1,8 +1,12 @@
 import secrets
 import string
-from pydantic import BaseModel,EmailStr
+import time
+
 from httpx import AsyncClient as HttpxAsyncClient
+from pydantic import BaseModel, EmailStr
+
 from app.config import Settings
+from app.services.email_logs import EmailLogService, EmailLogStatus, EmailLogTypes
 
 settings = Settings()
 
@@ -54,11 +58,34 @@ async def postmark_email(body: PostmarkEmailBody | list[PostmarkEmailBody]) -> P
         else:
             return PostmarkEmailResponse(**response_data)
 
+def verify_email_html_content(verification_code: str):
+    return f"""
+    <html>
+        <body>
+            <p>Please use this code to verify your {settings.APP_NAME} email address:</p>
+            <h2>{verification_code}</h2>
+        </body>
+    </html>
+    """
 
-async def send_email(to: EmailStr, subject: str = "", html_content: str = "", mailer = settings.MAIL_MAILER):
+async def send_email(to_mail: EmailStr, subject: str = "", mailer = settings.MAIL_MAILER):
+    verification_code = generate_random_string()
+    html_content = verify_email_html_content(verification_code)
     data = PostmarkEmailBody(
-        To=to,
+        To=to_mail,
         Subject=subject,
         HtmlBody=html_content
     )
-    return await postmark_email(data)
+    send_resault = await postmark_email(data)
+
+    if send_resault.ErrorCode == 0:
+        status = EmailLogStatus.SUCCESS
+        expires_timestamp = int(time.time()) + (5 * 60)
+    else:
+        expires_timestamp = None
+        status = EmailLogStatus.FAILED
+
+    await EmailLogService().store(to_mail, EmailLogTypes.VERIFY_ADDRESS, status, expires_timestamp, mailer, send_resault.MessageID, send_resault.model_dump())
+
+    return send_resault
+
