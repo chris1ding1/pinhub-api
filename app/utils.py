@@ -69,8 +69,8 @@ def verify_email_html_content(verification_code: str):
     """
 
 async def send_email(to_mail: EmailStr, subject: str = "", mailer = settings.MAIL_MAILER):
-    verification_code = generate_random_string()
-    html_content = verify_email_html_content(verification_code)
+    verify_code = generate_random_string()
+    html_content = verify_email_html_content(verify_code)
     data = PostmarkEmailBody(
         To=to_mail,
         Subject=subject,
@@ -85,7 +85,7 @@ async def send_email(to_mail: EmailStr, subject: str = "", mailer = settings.MAI
         expires_timestamp = None
         status = EmailLogStatus.FAILED
 
-    await EmailLogService().store(to_mail, EmailLogTypes.VERIFY_ADDRESS, status, expires_timestamp, mailer, send_resault.MessageID, send_resault.model_dump())
+    await EmailLogService().store(to_mail, EmailLogTypes.VERIFY_ADDRESS, status, verify_code, expires_timestamp, mailer, send_resault.MessageID, send_resault.model_dump())
 
     return send_resault
 

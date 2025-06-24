@@ -34,6 +34,9 @@ class EmailLogBase(BaseModel):
     provider_response: Any
     create_timestamp: int
 
+class EmailLogVerify(EmailLogBase):
+    verify_code: str
+
 class EmailLogService:
     def __init__(self):
         self.dynamodb = boto3.resource(
@@ -49,17 +52,19 @@ class EmailLogService:
         email_address: EmailStr,
         business_type: EmailLogTypes,
         status: EmailLogStatus,
+        verify_code: str,
         expires_timestamp: int | None,
         provider: str,
         provider_id: str | None,
         provider_response: Any,
     ):
 
-        email_log = EmailLogBase(
+        email_log = EmailLogVerify(
             id=str(uuid.uuid4()),
             email_address=email_address,
             business_type=business_type,
             status=status,
+            verify_code=verify_code,
             expires_timestamp=expires_timestamp,
             provider=provider,
             provider_id=provider_id,
