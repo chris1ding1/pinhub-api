@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     APP_TIMEZONE: str = "UTC"
     APP_LOCALE: str
 
+    MAIL_MAILER: str | None = None
     MAIL_FROM_ADDRESS: str | None = None
 
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
