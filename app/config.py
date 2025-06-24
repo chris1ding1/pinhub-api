@@ -1,7 +1,7 @@
 import secrets
 from typing import Annotated, Any, Literal
 
-from pydantic import AnyUrl, BeforeValidator, PostgresDsn, computed_field
+from pydantic import AnyUrl, BeforeValidator, EmailStr,PostgresDsn, computed_field
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -26,8 +26,8 @@ class Settings(BaseSettings):
     APP_TIMEZONE: str = "UTC"
     APP_LOCALE: str
 
-    MAIL_MAILER: str | None = None
-    MAIL_FROM_ADDRESS: str | None = None
+    MAIL_MAILER: Literal["postmark"] | None = None
+    MAIL_FROM_ADDRESS: EmailStr | None = None
 
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
     SECRET_KEY: str = secrets.token_urlsafe(32)
