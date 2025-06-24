@@ -1,7 +1,7 @@
 import secrets
 from typing import Annotated, Any, Literal
 
-from pydantic import AnyUrl, BeforeValidator, EmailStr,PostgresDsn, computed_field
+from pydantic import AnyUrl, BeforeValidator, EmailStr, PostgresDsn, computed_field
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -46,6 +46,7 @@ class Settings(BaseSettings):
 
     AWS_ACCESS_KEY_ID: str | None = None
     AWS_SECRET_ACCESS_KEY: str | None = None
+    AWS_DEFAULT_REGION: str | None = None
 
     GOOGLE_CLIENT_ID: str | None = None
     GOOGLE_CLIENT_SECRET: str | None = None
@@ -86,3 +87,8 @@ class Settings(BaseSettings):
             port=self.POSTGRES_PORT,
             path=self.POSTGRES_DB,
         )
+
+    @computed_field
+    @property
+    def EMAIL_LOGS_TABLE_NAME(self) -> str:
+        return f"{self.ENVIRONMENT}_{self.APP_NAME}_email_logs".lower()
