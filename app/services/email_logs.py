@@ -78,3 +78,7 @@ class EmailLogService:
             )
         except ClientError as err:
             raise err
+
+    async def query_by_filter(self, filter_expr: str):
+        response = self.dynamodbTable.scan(FilterExpression=filter_expr)
+        return response.get("Items", [])
