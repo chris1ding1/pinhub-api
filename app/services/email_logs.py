@@ -27,7 +27,7 @@ class EmailLogBase(BaseModel):
     id: str
     email_address: EmailStr
     business_type: EmailLogTypes
-    status: EmailLogStatus
+    send_status: EmailLogStatus
     expires_timestamp: int | None = None
     provider: str
     provider_id: str | None = None
@@ -51,7 +51,7 @@ class EmailLogService:
         self,
         email_address: EmailStr,
         business_type: EmailLogTypes,
-        status: EmailLogStatus,
+        send_status: EmailLogStatus,
         verify_code: str,
         expires_timestamp: int | None,
         provider: str,
@@ -63,7 +63,7 @@ class EmailLogService:
             id=str(uuid.uuid4()),
             email_address=email_address,
             business_type=business_type,
-            status=status,
+            send_status=send_status,
             verify_code=verify_code,
             expires_timestamp=expires_timestamp,
             provider=provider,
