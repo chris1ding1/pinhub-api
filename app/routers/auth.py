@@ -16,4 +16,5 @@ async def auth_email_send(authEmail: AuthEmail):
 
 @router.post("/auth/email/verify")
 async def auth_email_verify(authEmailVerify: AuthEmailVerify):
-    return {"email": authEmailVerify.email, "verifyCode": authEmailVerify.verifyCode}
+    verify_resault = await get_auth_service().verify_email(authEmailVerify.email, authEmailVerify.verifyCode)
+    return verify_resault
