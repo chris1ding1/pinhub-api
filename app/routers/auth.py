@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel, EmailStr, Field
-
-from app.utils import send_email
+from app.services.auth import get_auth_service
 
 router = APIRouter()
 
@@ -13,7 +12,7 @@ class AuthEmailVerify(AuthEmail):
 
 @router.post("/auth/email/send")
 async def auth_email_send(authEmail: AuthEmail):
-    return await send_email(authEmail.email, "Please verify your email address")
+    return await get_auth_service().send_auth_verify_email(authEmail.email, "Please verify your email address")
 
 @router.post("/auth/email/verify")
 async def auth_email_verify(authEmailVerify: AuthEmailVerify):
