@@ -1,3 +1,4 @@
+import uuid
 import time
 import secrets
 from typing import Optional
@@ -14,8 +15,18 @@ class UserService:
         with Session(engine) as session:
             statement = select(User).where(
                 User.email == email,
-                # User.deleted_at.is_(None)
             )
+            return session.exec(statement).first()
+
+    def get_user_by_id(self, id: uuid.UUID, trashed: bool = False) -> Optional[User]:
+        with Session(engine) as session:
+            statement = select(User).where(
+                User.id == id,
+            )
+            if not trashed:
+                statement = statement.where(
+                    User.deleted_at.is_(None)
+                )
             return session.exec(statement).first()
 
     def create_user_by_email(self, email: EmailStr) -> User:
