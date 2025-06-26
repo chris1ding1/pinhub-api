@@ -1,18 +1,25 @@
 from fastapi import APIRouter
 
+from app.services.pins import PinsService
+from app.models.common import ApiResponse
+from app.models.pin import PinFormCreate, PinPublic
+from app.deps import CurrentUser, SessionDep
+
+
 router = APIRouter()
 
-
 @router.post("/pins")
-async def store(link):
+async def store(pinFormCreate: PinFormCreate, user: CurrentUser, session: SessionDep, response_model=ApiResponse):
+    pins_service = PinsService(session)
+    pin = pins_service.store(pinFormCreate, user)
+    session.refresh(pin)
+    pin_public = PinPublic.model_validate(pin)
+    return ApiResponse(data=pin_public)
+
+@router.put("/pins/{id}")
+async def update(id: str, user: CurrentUser):
     return ""
 
-
-@router.put("/pins/{pin_uid}")
-async def update(pin_uid: int):
-    return ""
-
-
-@router.delete("/pins/{pin_uid}")
-def destroy(pin_uid: int):
+@router.delete("/pins/{id}")
+def destroy(id: str, user: CurrentUser):
     return ""
