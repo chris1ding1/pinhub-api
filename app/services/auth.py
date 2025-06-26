@@ -24,7 +24,7 @@ class AuthService:
         </html>
         """
 
-    async def send_auth_verify_email(self, to_mail: EmailStr, subject: str = "", mailer = settings.MAIL_MAILER):
+    async def send_auth_verify_email(self, to_mail: EmailStr, subject: str = "", mailer = settings.MAIL_MAILER) -> bool:
         verify_code = generate_random_string()
         html_content = self.verify_email_html_content(verify_code)
         data = PostmarkEmailBody(
@@ -37,13 +37,15 @@ class AuthService:
         if send_resault.ErrorCode == 0:
             status = EmailLogStatus.SUCCESS
             expires_timestamp = int(time.time()) + (5 * 60)
+            res = True
         else:
             expires_timestamp = None
             status = EmailLogStatus.FAILED
+            res = False
 
         await EmailLogService().store(to_mail, EmailLogTypes.VERIFY_ADDRESS, status, verify_code, expires_timestamp, mailer, send_resault.MessageID, send_resault.model_dump())
 
-        return send_resault
+        return res
 
     async def verify_email(self, email: EmailStr, verify_code: str):
         query_filter = (
