@@ -12,10 +12,13 @@ class ApiResponse(BaseModel):
     code: StatusCode = StatusCode.SUCCESS
     data: Any | None = None
 
-class IndexResource(BaseModel):
+class IndexResourceData(BaseModel):
     total: int = 0
     page: int = 1
     page_size: int = settings.PAGE_SIZE
     next_page: int = 0
     prev_page: int = 0
-    items: List[Any]
+    items: List[Any] = []
+
+class IndexResource(ApiResponse):
+    data: IndexResourceData = None
