@@ -3,6 +3,7 @@ import secrets
 
 from pydantic import EmailStr
 
+from app.services.token import get_token_service
 from app.config import Settings
 from app.services.email_logs import EmailLogService, EmailLogStatus, EmailLogTypes
 from app.services.emails import PostmarkEmailBody, postmark_email
@@ -58,18 +59,18 @@ class AuthService:
 
         email_log = max(email_logs, key=lambda x: x.get('expires_timestamp', 0))
 
-        if secrets.compare_digest(email_log.get('verify_code'), verify_code):
-            user = get_user_service().get_user_by_email(email)
-            if not user:
-                user = get_user_service().create_user_by_email(email)
-                return True
-            else:
-                if user.deleted_at:
-                    return False
-                else:
-                    return True
-        else:
+        if not secrets.compare_digest(email_log.get('verify_code'), verify_code):
             return False
+
+        user = get_user_service().get_user_by_email(email)
+        if not user:
+            user = get_user_service().create_user_by_email(email)
+        else:
+            if user.deleted_at:
+                return False
+
+        token = get_token_service().store(str(user.id))
+        return token
 
 def get_auth_service():
     return AuthService()
