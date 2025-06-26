@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import Settings
-from app.routers import auth
+from app.routers import auth, users
 
 app = FastAPI()
 
@@ -26,5 +26,5 @@ if get_settings().all_cors_origins:
         allow_headers=["*"],
     )
 #app.include_router(pins.router)
-#app.include_router(users.router)
+app.include_router(users.router)
 app.include_router(auth.router)
