@@ -57,3 +57,7 @@ class PinPublic(Pin):
         if self.image_path:
             return f"{settings.FRONTEND_ASSET_URL}/{self.image_path}"
         return None
+
+class PinsPublic(SQLModel):
+    data: list[PinPublic]
+    count: int
