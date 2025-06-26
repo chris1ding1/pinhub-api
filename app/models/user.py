@@ -24,3 +24,8 @@ class User(UserBase, table=True):
     deleted_at: int | None = Field(default=None)
     created_at: int
     updated_at: int
+
+class UserAuth(UserBase):
+    id: uuid.UUID
+    token: str
+    email: EmailStr
