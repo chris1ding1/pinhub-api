@@ -21,6 +21,10 @@ async def auth_email_send(authEmail: AuthEmail, response_model=ApiResponse):
     raise HTTPException(status_code=400)
 
 @router.post("/auth/email/verify")
-async def auth_email_verify(authEmailVerify: AuthEmailVerify):
+async def auth_email_verify(authEmailVerify: AuthEmailVerify, response_model=ApiResponse):
     verify_resault = await get_auth_service().verify_email(authEmailVerify.email, authEmailVerify.verifyCode)
-    return verify_resault
+
+    if verify_resault:
+        return ApiResponse(data=verify_resault)
+
+    raise HTTPException(status_code=400)
