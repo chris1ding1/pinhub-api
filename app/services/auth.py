@@ -10,6 +10,7 @@ from app.services.emails import PostmarkEmailBody, postmark_email
 from app.services.users import get_user_service
 from app.utils import generate_random_string
 from boto3.dynamodb.conditions import Attr
+from app.models.user import UserAuth
 
 settings = Settings()
 
@@ -72,7 +73,9 @@ class AuthService:
                 return False
 
         token = get_token_service().store(str(user.id))
-        return token
+        user_dict = user.model_dump()
+        user_dict['token'] = token
+        return UserAuth(**user_dict)
 
 def get_auth_service():
     return AuthService()
