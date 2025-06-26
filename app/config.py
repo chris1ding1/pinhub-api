@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     APP_TIMEZONE: str = "UTC"
     APP_LOCALE: str
 
+    FRONTEND_ASSET_URL: str
+
     MAIL_MAILER: Literal["postmark"] | None = None
     MAIL_FROM_ADDRESS: EmailStr | None = None
 
