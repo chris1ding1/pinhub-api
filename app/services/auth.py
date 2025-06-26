@@ -6,6 +6,7 @@ from pydantic import EmailStr
 from app.config import Settings
 from app.services.email_logs import EmailLogService, EmailLogStatus, EmailLogTypes
 from app.services.emails import PostmarkEmailBody, postmark_email
+from app.services.users import get_user_service
 from app.utils import generate_random_string
 from boto3.dynamodb.conditions import Attr
 
@@ -58,7 +59,15 @@ class AuthService:
         email_log = max(email_logs, key=lambda x: x.get('expires_timestamp', 0))
 
         if secrets.compare_digest(email_log.get('verify_code'), verify_code):
-            return True
+            user = get_user_service().get_user_by_email(email)
+            if not user:
+                user = get_user_service().create_user_by_email(email)
+                return True
+            else:
+                if user.deleted_at:
+                    return False
+                else:
+                    return True
         else:
             return False
 
