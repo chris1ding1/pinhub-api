@@ -15,8 +15,8 @@ settings = Settings()
 class Category(str, Enum):
     URL = "url"
     TEXT = "text"
-    AUDIO = "audio"
-    IMAGE = "image"
+    #AUDIO = "audio"
+    #IMAGE = "image"
 
 class Visibility(IntEnum):
     PRIVATE = 1
