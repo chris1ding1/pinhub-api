@@ -31,8 +31,9 @@ class Settings(BaseSettings):
 
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
     SECRET_KEY: str = secrets.token_urlsafe(32)
-    # 60 minutes * 24 hours * 8 days = 8 days
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+    ALGORITHM: str = "HS256"
+    # 604800s = 7 days
+    ACCESS_TOKEN_EXPIRE_SECOND: int = 604800
     BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = (
         []
     )
@@ -92,3 +93,8 @@ class Settings(BaseSettings):
     @property
     def EMAIL_LOGS_TABLE_NAME(self) -> str:
         return f"{self.ENVIRONMENT}_{self.APP_NAME}_email_logs".lower()
+
+    @computed_field
+    @property
+    def TOKENS_TABLE_NAME(self) -> str:
+        return f"{self.ENVIRONMENT}_{self.APP_NAME}_tokens".lower()
