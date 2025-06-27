@@ -51,7 +51,7 @@ jobs:
           cd packages
           zip -r ../package.zip .
           cd ..
-          zip -r package.zip app lambda_handler.py          
+          zip -r package.zip app lambda_function.py          
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
