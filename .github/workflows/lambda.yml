@@ -24,6 +24,22 @@ jobs:
       - name: Install the project
         run: uv sync --locked --all-extras --dev
 
+      - name: Set environment variable
+        run: |
+          cp .env.example .env
+          sed -i "s/^SECRET_KEY=$/SECRET_KEY=${{ secrets.SECRET_KEY }}/" .env
+
+          sed -i "s/^POSTGRES_HOST=$/POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}/" .env
+          sed -i "s/^POSTGRES_PORT=$/POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}/" .env
+          sed -i "s/^POSTGRES_DB=$/POSTGRES_DB=${{ secrets.POSTGRES_DB }}/" .env
+          sed -i "s/^POSTGRES_USER=$/POSTGRES_USER=${{ secrets.POSTGRES_USER }}/" .env
+          sed -i "s/^POSTGRES_PASSWORD=$/POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}/" .env
+
+          sed -i "s/^AWS_ACCESS_KEY_ID=$/AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}/" .env
+          sed -i "s/^AWS_SECRET_ACCESS_KEY=$/AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}/" .env
+
+          sed -i "s/^POSTMARK_TOKEN=$/POSTMARK_TOKEN=${{ secrets.AWS_SECRET_ACCESS_KEY }}/" .env
+
       - name: Deploying a zip archive
         run: |
           uv export --frozen --no-dev --no-editable -o requirements.txt
@@ -44,4 +60,4 @@ jobs:
           aws-region: us-east-1
 
       - name: To Lambda
-        run: aws lambda update-function-code --function-name <Function Name> --zip-file fileb://package.zip
+        run: aws lambda update-function-code --function-name ${{ secrets.AWS_LAMBDA_FUNCTION_NAME }} --zip-file fileb://package.zip
