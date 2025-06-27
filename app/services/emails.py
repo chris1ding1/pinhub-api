@@ -1,6 +1,9 @@
 from httpx import AsyncClient as HttpxAsyncClient
 from pydantic import BaseModel, EmailStr
 
+import boto3
+from botocore.exceptions import ClientError as BotoClientError
+
 from app.config import Settings
 
 settings = Settings()
@@ -48,3 +51,42 @@ async def postmark_email(body: PostmarkEmailBody | list[PostmarkEmailBody]) -> P
             return [PostmarkEmailResponse(**item) for item in response_data]
         else:
             return PostmarkEmailResponse(**response_data)
+
+class SESEmailBody(SendEmail):
+    TextBody: str | None = None
+    HtmlBody: str | None = None
+
+class SESEmailResponse(BaseModel):
+    MessageID: str | None = None
+    ErrorCode: int = 0
+    ResponseMetadata: dict
+
+async def ses_email(email: SESEmailBody) -> SESEmailResponse:
+    ses_client = boto3.client(
+        'ses',
+        region_name=settings.AWS_DEFAULT_REGION,
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+    )
+    email_message = {
+        'Subject': {'Data': email.Subject},
+        'Body': {}
+    }
+    if email.TextBody:
+        email_message['Body']['Text'] = {'Data': email.TextBody}
+    if email.HtmlBody:
+        email_message['Body']['Html'] = {'Data': email.HtmlBody}
+
+    try:
+        response = ses_client.send_email(
+            Source=email.From,
+            Destination={'ToAddresses': [email.To]},
+            Message=email_message
+        )
+
+        return SESEmailResponse(**response)
+    except BotoClientError as err:
+        return SESEmailResponse(
+            ErrorCode=getattr(err, 'response', {}).get('Error', {}).get('Code', 999),
+            ResponseMetadata={'Error': str(err)}
+        )

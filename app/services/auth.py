@@ -6,7 +6,7 @@ from pydantic import EmailStr
 from app.services.token import get_token_service
 from app.config import Settings
 from app.services.email_logs import EmailLogService, EmailLogStatus, EmailLogTypes
-from app.services.emails import PostmarkEmailBody, postmark_email
+from app.services.emails import PostmarkEmailBody, postmark_email,SESEmailBody, ses_email
 from app.services.users import get_user_service
 from app.utils import generate_random_string
 from boto3.dynamodb.conditions import Attr
@@ -28,12 +28,22 @@ class AuthService:
     async def send_auth_verify_email(self, to_mail: EmailStr, subject: str = "", mailer = settings.MAIL_MAILER) -> bool:
         verify_code = generate_random_string()
         html_content = self.verify_email_html_content(verify_code)
-        data = PostmarkEmailBody(
-            To=to_mail,
-            Subject=subject,
-            HtmlBody=html_content
-        )
-        send_resault = await postmark_email(data)
+
+        if mailer == "ses":
+            data = SESEmailBody(
+                To=to_mail,
+                Subject=subject,
+                HtmlBody=html_content
+            )
+            send_resault = await ses_email(data)
+        else:
+            data = PostmarkEmailBody(
+                To=to_mail,
+                Subject=subject,
+                HtmlBody=html_content
+            )
+            send_resault = await postmark_email(data)
+
 
         if send_resault.ErrorCode == 0:
             status = EmailLogStatus.SUCCESS

@@ -28,7 +28,7 @@ class Settings(BaseSettings):
 
     FRONTEND_ASSET_URL: str
 
-    MAIL_MAILER: Literal["postmark"] | None = None
+    MAIL_MAILER: Literal["postmark", "ses"] | None = None
     MAIL_FROM_ADDRESS: EmailStr | None = None
 
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
