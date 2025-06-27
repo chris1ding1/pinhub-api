@@ -39,7 +39,7 @@ jobs:
           sed -i "s|^AWS_ACCESS_KEY_ID=\$|AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}|" .env
           sed -i "s|^AWS_SECRET_ACCESS_KEY=\$|AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}|" .env
 
-          sed -i "s|^POSTMARK_TOKEN=\$|POSTMARK_TOKEN=${{ secrets.AWS_SECRET_ACCESS_KEY }}|" .env
+          sed -i "s|^POSTMARK_TOKEN=\$|POSTMARK_TOKEN=${{ secrets.POSTMARK_TOKEN }}|" .env
 
       - name: Deploying a zip archive
         run: |
