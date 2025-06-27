@@ -39,12 +39,18 @@ class EmailLogVerify(EmailLogBase):
 
 class EmailLogService:
     def __init__(self):
-        self.dynamodb = boto3.resource(
-            'dynamodb',
-            region_name=settings.AWS_DEFAULT_REGION,
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
-        )
+        if settings.ENVIRONMENT == "local":
+            self.dynamodb = boto3.resource(
+                'dynamodb',
+                region_name=settings.AWS_DEFAULT_REGION,
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+            )
+        else:
+            self.dynamodb = boto3.resource(
+                'dynamodb',
+                region_name=settings.AWS_DEFAULT_REGION,
+            )
         self.dynamodbTable = self.dynamodb.Table(settings.EMAIL_LOGS_TABLE_NAME)
 
     async def store(

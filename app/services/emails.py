@@ -62,12 +62,18 @@ class SESEmailResponse(BaseModel):
     ResponseMetadata: dict
 
 async def ses_email(email: SESEmailBody) -> SESEmailResponse:
-    ses_client = boto3.client(
-        'ses',
-        region_name=settings.AWS_DEFAULT_REGION,
-        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
-    )
+    if settings.ENVIRONMENT == "local":
+        ses_client = boto3.client(
+            'ses',
+            region_name=settings.AWS_DEFAULT_REGION,
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+        )
+    else:
+        ses_client = boto3.client(
+            'ses',
+            region_name=settings.AWS_DEFAULT_REGION,
+        )
     email_message = {
         'Subject': {'Data': email.Subject},
         'Body': {}
