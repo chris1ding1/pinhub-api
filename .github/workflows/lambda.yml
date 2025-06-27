@@ -10,6 +10,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+
+      - name: Deploying a zip archive
+        run: |
+          uv export --frozen --no-dev --no-editable -o requirements.txt
+          uv pip install --no-installer-metadata --no-compile-bytecode --python-platform x86_64-manylinux2014 --target packages -r requirements.txt
+
+      - name: Application Packaging
+        run: |
+          cd packages
+          zip -r ../package.zip .
+          cd ..
+          zip -r package.zip app lambda_handler.py          
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
