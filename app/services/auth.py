@@ -9,6 +9,7 @@ from app.services.email_logs import EmailLogService, EmailLogStatus, EmailLogTyp
 from app.services.emails import PostmarkEmailBody, postmark_email,SESEmailBody, ses_email
 from app.services.users import get_user_service
 from app.utils import generate_random_string
+from app.models.common import StatusCode
 from boto3.dynamodb.conditions import Attr
 from app.models.user import UserAuth
 
@@ -81,6 +82,9 @@ class AuthService:
         else:
             if user.deleted_at:
                 return False
+
+        if not user:
+            return StatusCode.AUTH_EMAIL_USER_NOT_EXIST
 
         token = get_token_service().store(str(user.id))
         user_dict = user.model_dump()
