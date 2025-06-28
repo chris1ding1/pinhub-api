@@ -70,7 +70,7 @@ class EmailLogService:
             email_address=email_address,
             business_type=business_type,
             send_status=send_status,
-            verify_code=verify_code,
+            verify_code=str(verify_code),
             expires_timestamp=expires_timestamp,
             provider=provider,
             provider_id=provider_id,
