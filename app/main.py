@@ -1,4 +1,6 @@
 """main"""
+import logging
+import sys
 
 from functools import lru_cache
 
@@ -7,6 +9,16 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import Settings
 from app.routers import auth, pins, users
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 

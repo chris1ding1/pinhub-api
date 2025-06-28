@@ -1,5 +1,6 @@
 import time
 import secrets
+import logging
 
 from pydantic import EmailStr
 
@@ -14,6 +15,7 @@ from boto3.dynamodb.conditions import Attr
 from app.models.user import UserAuth
 
 settings = Settings()
+logger = logging.getLogger(__name__)
 
 class AuthService:
     def verify_email_html_content(self, verification_code: str) -> str:
@@ -75,6 +77,11 @@ class AuthService:
 
         stored_code = str(email_log.get('verify_code', '')).strip()
         verify_code = str(verify_code).strip()
+
+        logger.info(f"stored_code: '{stored_code}' (length: {len(stored_code)})")
+        logger.info(f"request code: '{verify_code}' (length: {len(verify_code)})")
+        logger.info(f"compare result: {stored_code == verify_code}")
+
         if not secrets.compare_digest(stored_code, verify_code):
             return StatusCode.AUTH_EMAIL_CODE_MISMATCH
 
