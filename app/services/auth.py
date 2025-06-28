@@ -73,8 +73,8 @@ class AuthService:
 
         email_log = max(email_logs, key=lambda x: x.get('expires_timestamp', 0))
 
-        stored_code = str(email_log.get('verify_code', ''))
-        verify_code = str(verify_code)
+        stored_code = str(email_log.get('verify_code', '')).strip()
+        verify_code = str(verify_code).strip()
         if not secrets.compare_digest(stored_code, verify_code):
             return StatusCode.AUTH_EMAIL_CODE_MISMATCH
 
