@@ -8,6 +8,9 @@ settings = Settings()
 class StatusCode(IntEnum):
     SUCCESS = 0
     AUTH_EMAIL_USER_NOT_EXIST = 101001
+    AUTH_EMAIL_USER_DEL = 101002
+    AUTH_EMAIL_CODE_RECORD_NOT_FOUND = 101003
+    AUTH_EMAIL_CODE_MISMATCH = 101004
 
 class ApiResponse(BaseModel):
     code: StatusCode = StatusCode.SUCCESS
