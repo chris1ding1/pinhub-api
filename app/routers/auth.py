@@ -24,9 +24,6 @@ async def auth_email_send(authEmail: AuthEmail, response_model=ApiResponse):
 async def auth_email_verify(authEmailVerify: AuthEmailVerify, response_model=ApiResponse):
     verify_resault = await get_auth_service().verify_email(authEmailVerify.email, authEmailVerify.verifyCode)
 
-    if verify_resault == StatusCode.AUTH_EMAIL_USER_NOT_EXIST:
-        raise HTTPException(status_code=500)
-
     if verify_resault:
         return ApiResponse(data=verify_resault)
 

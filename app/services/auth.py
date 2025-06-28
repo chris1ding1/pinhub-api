@@ -69,12 +69,14 @@ class AuthService:
         email_logs = await EmailLogService().query_by_filter(query_filter)
 
         if not email_logs:
-            return False
+            return StatusCode.AUTH_EMAIL_CODE_RECORD_NOT_FOUND
 
         email_log = max(email_logs, key=lambda x: x.get('expires_timestamp', 0))
 
-        if not secrets.compare_digest(email_log.get('verify_code'), verify_code):
-            return False
+        stored_code = str(email_log.get('verify_code', ''))
+        verify_code = str(verify_code)
+        if not secrets.compare_digest(stored_code, verify_code):
+            return StatusCode.AUTH_EMAIL_CODE_MISMATCH
 
         user = get_user_service().get_user_by_email(email)
         if not user:
