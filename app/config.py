@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     APP_LOCALE: str
 
     FRONTEND_ASSET_URL: str
+    DEFAULT_AVATAR_PATH: str = "/images/avatars/default.png"
 
     MAIL_MAILER: Literal["postmark", "ses"] | None = None
     MAIL_FROM_ADDRESS: EmailStr | None = None
