@@ -87,7 +87,7 @@ class AuthService:
             user = get_user_service().create_user_by_email(email)
         else:
             if user.deleted_at:
-                return False
+                return StatusCode.AUTH_EMAIL_USER_DEL
 
         if not user:
             return StatusCode.AUTH_EMAIL_USER_NOT_EXIST
