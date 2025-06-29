@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr, Field
+
 from app.services.auth import get_auth_service
-from app.models.common import ApiResponse, StatusCode
+from app.models.common import ApiResponse
+from app.models.user import UserAuth
 
 router = APIRouter()
 
@@ -24,7 +26,7 @@ async def auth_email_send(authEmail: AuthEmail, response_model=ApiResponse):
 async def auth_email_verify(authEmailVerify: AuthEmailVerify, response_model=ApiResponse):
     verify_resault = await get_auth_service().verify_email(authEmailVerify.email, authEmailVerify.verifyCode)
 
-    if verify_resault:
+    if isinstance(verify_resault, UserAuth):
         return ApiResponse(data=verify_resault)
 
     raise HTTPException(status_code=400)
