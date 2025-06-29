@@ -39,6 +39,7 @@ class UserService:
         user = User(
             username=username,
             name=username,
+            avatar_path=settings.DEFAULT_AVATAR_PATH,
             email=email,
             email_verified_at=current_time,
             created_at=current_time,
