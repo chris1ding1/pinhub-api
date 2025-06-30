@@ -12,12 +12,6 @@ from app.config import Settings
 
 settings = Settings()
 
-class Category(str, Enum):
-    URL = "url"
-    TEXT = "text"
-    #AUDIO = "audio"
-    #IMAGE = "image"
-
 class Visibility(IntEnum):
     PRIVATE = 1
     PUBLIC = 2
@@ -25,8 +19,7 @@ class Visibility(IntEnum):
 class PinBase(SQLModel):
     model_config = ConfigDict(use_enum_values=True, str_strip_whitespace=True)
 
-    category: Category
-    content: str | None = Field(default=None, max_length=512)
+    content: str | None = Field(default=None, max_length=3000)
     url: str | None = Field(default=None, max_length=2048)
     tags: Annotated[List[str], Field(default_factory=list, sa_type=JSONB)]
     visibility: Visibility = Field(default=Visibility.PRIVATE, sa_type=Integer)
