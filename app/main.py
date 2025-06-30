@@ -19,6 +19,8 @@ def get_settings():
     """Creating the Settings only once"""
     return Settings()
 
+print(f"all_cors_origins: {get_settings().all_cors_origins}")
+
 # Set all CORS enabled origins
 if get_settings().all_cors_origins:
     app.add_middleware(
