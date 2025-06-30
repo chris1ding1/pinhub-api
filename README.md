@@ -1,59 +1,77 @@
 # PinHub API
 
+## About
+
+PinHub's backend services, deployed and running on AWS Lambda. This FastAPI-based application provides RESTful APIs for the PinHub platform, handling user management, pin operations, and authentication services.
+
+### Lambda Function Setup
+
+The project uses Mangum as an ASGI adapter to convert the FastAPI application into a Lambda-compatible handler.
+
+### API Gateway Integration
+
+The Lambda function is integrated with AWS API Gateway to handle HTTP requests. The API Gateway:
+
+- Routes incoming requests to the Lambda function
+- Manages custom domain configuration with AWS Certificate Manager (ACM) for SSL/TLS certificates
+- Handles CORS policies and request/response transformations
+- Provides a RESTful interface for the frontend application
+
+### Database Architecture
+
+- **PostgreSQL** serves as the primary relational database for user data, pins, and core business entities
+- **DynamoDB** stores security-sensitive and time-critical data, including session tokens and temporary authentication data
+
+### Email Service Integration
+
+- Amazon SES
+- Postmark
+
+### Authentication & Security
+
+JWT tokens are generated within the Lambda function and stored in DynamoDB for session management.
+
+## Local Development
+
+### Prerequisites
+
+- Python 3.11+
+- uv package manager
+
+### Running the Application
+
+Start the development server:
+
+```bash
+uv run uvicorn app.main:app --reload
+```
+
+### Code Quality
+
+Run linting and formatting checks:
+
+```bash
+uv run ruff check
+```
+
 ## Roadmap
 
-- [ ] Send mail. Amazon SES
-- [ ] Amazon Transcribe
+- [ ] Supports image uploads and storage in Amazon S3
+- [ ] Supports voice-to-text conversion, with optional audio file storage in Amazon S3 (leverages Amazon Transcribe)
+- [ ] Includes search and tagging functionality
+- [ ] Allows users to optionally generate AI-powered summaries of saved content
+- [ ] Development of the MCP server
+- [ ] Development of browser extensions
+- [ ] User management and sharing of data
+- [ ] Code optimization
 
-## PostgreSQL
+## Links
 
-```sql
-CREATE TABLE users (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    username VARCHAR(128) NOT NULL UNIQUE,
-    name VARCHAR(255) NOT NULL,
-    avatar_path VARCHAR(255),
-    bio TEXT,
-    links JSONB DEFAULT jsonb_build_array(),
-    email VARCHAR(255) NOT NULL UNIQUE,
-    email_verified_at BIGINT,
-    locale VARCHAR(24) NOT NULL,
-    timezone VARCHAR(50) NOT NULL DEFAULT 'UTC',
-    preferences JSONB DEFAULT jsonb_build_object(),
-    deleted_at BIGINT,
-    created_at BIGINT NOT NULL DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT),
-    updated_at BIGINT NOT NULL DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT)
-);
-```
+- 🌐 **Website**: [pinhub.xyz](https://pinhub.xyz)
+- 💻 **Frontend Repository**: [pinhub-web](https://github.com/chris1ding1/pinhub-web)
 
-```sql
-CREATE TABLE pins (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID NOT NULL,
-    content TEXT,
-    url VARCHAR(255),
-    audio_path VARCHAR(255),
-    image_path VARCHAR(255),
-    tags JSONB DEFAULT jsonb_build_array(),
-    visibility SMALLINT NOT NULL,
-    extra JSONB DEFAULT jsonb_build_object(),
-    deleted_at BIGINT,
-    created_at BIGINT NOT NULL DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT),
-    updated_at BIGINT NOT NULL DEFAULT (EXTRACT(EPOCH FROM now())::BIGINT),
+## License
 
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE NO ACTION
-);
+[MIT](https://opensource.org/licenses/MIT)
 
-CREATE INDEX idx_pins_user_id ON pins(user_id);
-```
-
-`uv run uvicorn app.main:app --reload`
-
-`uv run ruff check`
-
-`uv run ruff check --fix && uv run ruff format`
-
-```console
-uv run ruff check app/
-uv run ruff format app/
-```
+Copyright (c) 2025, [Chris](https://chrisding.xyz)
