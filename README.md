@@ -30,7 +30,6 @@ CREATE TABLE users (
 CREATE TABLE pins (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID NOT NULL,
-    category VARCHAR(8) NOT NULL,
     content TEXT,
     url VARCHAR(255),
     audio_path VARCHAR(255),
