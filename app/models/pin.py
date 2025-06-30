@@ -1,6 +1,6 @@
 import uuid
 import time
-from enum import Enum, IntEnum
+from enum import IntEnum
 from typing import Any, Dict, List, Annotated
 
 from pydantic import ConfigDict, computed_field
