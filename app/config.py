@@ -1,5 +1,6 @@
 import secrets
 from typing import Annotated, Any, Literal
+from urllib.parse import urlparse
 
 from pydantic import AnyUrl, BeforeValidator, EmailStr, PostgresDsn, computed_field
 from pydantic_core import MultiHostUrl
@@ -101,3 +102,11 @@ class Settings(BaseSettings):
     @property
     def TOKENS_TABLE_NAME(self) -> str:
         return f"{self.ENVIRONMENT}_{self.APP_NAME}_tokens".lower()
+
+    @computed_field
+    @property
+    def ASSET_STORAGE_BUCKET_NAME(self) -> str:
+        parsed_url = urlparse(self.FRONTEND_ASSET_URL)
+        domain = parsed_url.netloc
+
+        return f"{self.ENVIRONMENT}.{domain}".lower()
