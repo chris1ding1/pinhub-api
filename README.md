@@ -54,6 +54,12 @@ Run linting and formatting checks:
 uv run ruff check
 ```
 
+### Update
+
+```bash
+uv sync --upgrade
+```
+
 ## Roadmap
 
 - [ ] Supports image uploads and storage in Amazon S3
