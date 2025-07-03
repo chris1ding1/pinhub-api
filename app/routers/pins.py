@@ -37,6 +37,8 @@ async def file_store(
         raise HTTPException(status_code=400, detail="File type is not supported")
 
     upLoadResult = PinsService.uplpad_file(file_content, user)
+    if upLoadResult is False:
+        raise HTTPException(status_code=500)
     return ApiResponse(data=upLoadResult)
 
 @router.put("/pins/{id}")
