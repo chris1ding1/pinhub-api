@@ -48,7 +48,8 @@ class PinsService:
         else:
             file_ext = file_kind.extension
 
-        file_path = f"pins/{user.id}/{first_two}/{third_fourth}/{file_name}.{file_ext}"
+        file_name = f"{file_name}.{file_ext}"
+        file_path = f"pins/{user.id}/{first_two}/{third_fourth}/{file_name}"
         bucket_name = settings.ASSET_STORAGE_BUCKET_NAME
 
         print(f"file_path={file_path}, bucket_name={bucket_name}")
@@ -63,4 +64,7 @@ class PinsService:
         except AwsClientError as e:
             raise False
 
-        return  f"/{file_path}"
+        return  {
+            "name": file_name,
+            "path": file_path,
+        }

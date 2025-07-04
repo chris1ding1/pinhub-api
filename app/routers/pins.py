@@ -39,7 +39,7 @@ async def file_store(
     upLoadResult = PinsService.uplpad_file(file_content, user)
     if upLoadResult is False:
         raise HTTPException(status_code=500)
-    return ApiResponse(data=upLoadResult)
+    return ApiResponse(data={"name":upLoadResult["name"]})
 
 @router.put("/pins/{id}")
 async def update(id: str, user: CurrentUser):
