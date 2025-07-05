@@ -1,5 +1,6 @@
 import uuid
 import time
+from urllib.parse import urljoin
 from enum import IntEnum
 from typing import Any, Dict, List, Annotated
 
@@ -21,6 +22,7 @@ class PinBase(SQLModel):
 
     content: str | None = Field(default=None, max_length=3000)
     url: str | None = Field(default=None, max_length=2048)
+    image_path: str | None = Field(default=None, max_length=255)
     tags: Annotated[List[str], Field(default_factory=list, sa_type=JSONB)]
     visibility: Visibility = Field(default=Visibility.PRIVATE, sa_type=Integer)
 
@@ -42,13 +44,13 @@ class PinPublic(Pin):
     @computed_field
     def audio_url(self) -> str | None:
         if self.audio_path:
-            return f"{settings.FRONTEND_ASSET_URL}/{self.audio_path}"
+            return urljoin(settings.FRONTEND_ASSET_URL, self.audio_path)
         return None
 
     @computed_field
     def image_url(self) -> str | None:
         if self.image_path:
-            return f"{settings.FRONTEND_ASSET_URL}/{self.image_path}"
+            return urljoin(settings.FRONTEND_ASSET_URL, self.image_path)
         return None
 
 class PinsPublic(SQLModel):
