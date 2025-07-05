@@ -1,5 +1,6 @@
 import boto3
 from functools import lru_cache
+from botocore.exceptions import ClientError as AwsClientError
 
 from app.config import Settings
 
@@ -34,6 +35,14 @@ class AwsService:
 
     def get_ses(self):
         return self.get_client("ses")
+
+    def get_s3_head_object(self, bucket_name: str, object_key: str):
+        s3Client = self.get_s3()
+        try:
+            s3Client.meta.client.head_object(Bucket=bucket_name, Key=object_key)
+            return True
+        except AwsClientError as e:
+            return False
 
 @lru_cache()
 def get_aws_service() -> AwsService:
