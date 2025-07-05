@@ -1,6 +1,6 @@
 import uuid
 import time
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from enum import IntEnum
 from typing import Any, Dict, List, Annotated
 
@@ -51,6 +51,16 @@ class PinPublic(Pin):
     def image_url(self) -> str | None:
         if self.image_path:
             return urljoin(settings.FRONTEND_ASSET_URL, self.image_path)
+        return None
+
+    @computed_field
+    def url_host(self) -> str | None:
+        if self.url:
+            try:
+                parsed = urlparse(self.url)
+                return parsed.netloc
+            except Exception:
+                return None
         return None
 
 class PinsPublic(SQLModel):
