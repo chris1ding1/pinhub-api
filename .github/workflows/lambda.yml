@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+    paths:
+        - 'app/**'
+        - '.env.example'
+        - 'lambda_function.py'
+        - 'pyproject.toml'
+        - 'uv.lock'
   workflow_dispatch:
 
 jobs:
