@@ -1,8 +1,9 @@
 import uuid
 import filetype
+from uuid import UUID
 
 from botocore.exceptions import ClientError as AwsClientError
-from sqlmodel import func, select
+from sqlmodel import func, select, delete
 
 from app.config import Settings
 from app.deps import SessionDep
@@ -21,6 +22,19 @@ class PinsService:
         self.session.add(db_pin)
         self.session.commit()
         return db_pin
+
+    def get_by_id_and_user(self, pin_id: uuid.UUID, user_id: uuid.UUID) -> Pin | None:
+        statement = select(Pin).where(
+            Pin.id == pin_id,
+            Pin.user_id == user_id,
+            Pin.deleted_at.is_(None)
+        )
+        return self.session.exec(statement).first()
+
+    def delete_by_id(self, id: UUID) -> None:
+        statement = delete(Pin).where(Pin.id == id)
+        self.session.exec(statement)
+        self.session.commit()
 
     def index_by_user_id(self, user: User):
         count_statement = (
