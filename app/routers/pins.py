@@ -1,6 +1,7 @@
 import filetype
 from typing import Annotated
 from urllib.parse import urlparse
+from uuid import UUID
 from fastapi import APIRouter, File, UploadFile, HTTPException
 
 from app.utils import get_path_segment
@@ -65,5 +66,12 @@ async def update(id: str, user: CurrentUser):
     return ""
 
 @router.delete("/pins/{id}")
-def destroy(id: str, user: CurrentUser):
-    return ""
+def destroy(id: UUID, user: CurrentUser, session: SessionDep, response_model=ApiResponse):
+    pins_service = PinsService(session)
+
+    pin = pins_service.get_by_id_and_user(id, user.id)
+    if not pin:
+        raise HTTPException(status_code=404)
+
+    pins_service.delete_by_id(id)
+    return ApiResponse()
