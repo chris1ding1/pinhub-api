@@ -1,9 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr, Field
 
+from app.deps import CurrentUser
 from app.services.auth import get_auth_service
 from app.models.common import ApiResponse
 from app.models.user import UserAuth
+
 
 router = APIRouter()
 
@@ -30,3 +32,8 @@ async def auth_email_verify(authEmailVerify: AuthEmailVerify, response_model=Api
         return ApiResponse(data=verify_resault)
 
     raise HTTPException(status_code=400)
+
+@router.post("/logout")
+async def logout(user: CurrentUser, response_model=ApiResponse):
+    """Logout. TODO: Clear token"""
+    return ApiResponse()
