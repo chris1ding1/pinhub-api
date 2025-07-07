@@ -12,6 +12,7 @@ AWS Lambda is utilized as the core backend compute service for PinHub's APIs. It
 - **Handling bookmark data**: It interacts with the PostgreSQL database to save and manage bookmark data.
 - **Storing files**: When creating bookmark data, it uploads audio and image files to Amazon S3, a scalable storage service.
 - **Speech to Text**: Amazon Transcribe
+- **Log**: Amazon CloudWatch
 
 ## A list of all AWS tools used
 
