@@ -76,7 +76,8 @@ class PinsService:
                 ContentType=file_kind.mime if file_kind else 'application/octet-stream'
             )
         except AwsClientError as e:
-            raise False
+            print(f"AwsClientError: {e}")
+            raise e
 
         return  {
             "name": file_name,

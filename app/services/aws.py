@@ -42,7 +42,7 @@ class AwsService:
             s3Client.meta.client.head_object(Bucket=bucket_name, Key=object_key)
             return True
         except AwsClientError as e:
-            return False
+            raise e
 
 @lru_cache()
 def get_aws_service() -> AwsService:
