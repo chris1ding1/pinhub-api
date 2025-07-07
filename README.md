@@ -63,7 +63,7 @@ uv sync --upgrade
 ## Roadmap
 
 - [x] Supports image uploads and storage in Amazon S3
-- [ ] Supports voice-to-text conversion, with optional audio file storage in Amazon S3 (leverages Amazon Transcribe)
+- [x] Supports voice-to-text conversion, with optional audio file storage in Amazon S3 (leverages Amazon Transcribe)
 - [ ] Includes search and tagging functionality
 - [ ] Allows users to optionally generate AI-powered summaries of saved content
 - [ ] Development of the MCP server
