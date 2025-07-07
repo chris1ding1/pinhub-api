@@ -1,6 +1,6 @@
 # PinHub API
 
-🌐 **Website**: [pinhub.xyz](https://pinhub.xyz)
+🌐 **Website**: [PinHub](https://pinhub.xyz)
 
 ## About the use of AWS Lambda
 
