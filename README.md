@@ -4,6 +4,20 @@
 
 PinHub's backend services, deployed and running on AWS Lambda. This FastAPI-based application provides RESTful APIs for the PinHub platform, handling user management, pin operations, and authentication services.
 
+## A list of all AWS tools used
+
+- Amazon API Gateway
+- Amazon CloudFront
+- Amazon CloudWatch
+- Amazon DynamoDB
+- Amazon Q
+- Amazon S3
+- Amazon SES
+- Amazon Transcribe
+- AWS ACM
+- AWS Amplify
+- AWS Lambda
+
 ### Lambda Function Setup
 
 The project uses Mangum as an ASGI adapter to convert the FastAPI application into a Lambda-compatible handler.
