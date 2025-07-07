@@ -1,8 +1,17 @@
 # PinHub API
 
-## About
+🌐 **Website**: [pinhub.xyz](https://pinhub.xyz)
 
-PinHub's backend services, deployed and running on AWS Lambda. This FastAPI-based application provides RESTful APIs for the PinHub platform, handling user management, pin operations, and authentication services.
+## About the use of AWS Lambda
+
+AWS Lambda is utilized as the core backend compute service for PinHub's APIs. It processes requests sent from the frontend through Amazon API Gateway and handles a variety of tasks, including:
+
+- **Sending verification emails**: It uses Amazon SES or Postmark to deliver emails for user verification.
+- **Managing user data**: It connects to a PostgreSQL database to query or create user information.
+- **Storing tokens and records**: It saves tokens and email sending records in Amazon DynamoDB, a NoSQL database service.
+- **Handling bookmark data**: It interacts with the PostgreSQL database to save and manage bookmark data.
+- **Storing files**: When creating bookmark data, it uploads audio and image files to Amazon S3, a scalable storage service.
+- **Speech to Text**: Amazon Transcribe
 
 ## A list of all AWS tools used
 
@@ -18,33 +27,6 @@ PinHub's backend services, deployed and running on AWS Lambda. This FastAPI-base
 - AWS Amplify
 - AWS for GitHub Actions
 - AWS Lambda
-
-### Lambda Function Setup
-
-The project uses Mangum as an ASGI adapter to convert the FastAPI application into a Lambda-compatible handler.
-
-### API Gateway Integration
-
-The Lambda function is integrated with AWS API Gateway to handle HTTP requests. The API Gateway:
-
-- Routes incoming requests to the Lambda function
-- Manages custom domain configuration with AWS Certificate Manager (ACM) for SSL/TLS certificates
-- Handles CORS policies and request/response transformations
-- Provides a RESTful interface for the frontend application
-
-### Database Architecture
-
-- **PostgreSQL** serves as the primary relational database for user data, pins, and core business entities
-- **DynamoDB** stores security-sensitive and time-critical data, including session tokens and temporary authentication data
-
-### Email Service Integration
-
-- Amazon SES
-- Postmark
-
-### Authentication & Security
-
-JWT tokens are generated within the Lambda function and stored in DynamoDB for session management.
 
 ## Local Development
 
@@ -74,11 +56,6 @@ uv run ruff check
 ```bash
 uv sync --upgrade
 ```
-
-## Links
-
-- 🌐 **Website**: [pinhub.xyz](https://pinhub.xyz)
-- 💻 **Frontend Repository**: [pinhub-web](https://github.com/chris1ding1/pinhub-web)
 
 ## License
 
