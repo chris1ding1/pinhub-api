@@ -13,15 +13,20 @@ class AwsService:
 
     def get_client(self, service_name: str):
         if service_name not in self._clients:
+            if service_name in ['transcribe']:
+                boto3_method = boto3.client
+            else:
+                boto3_method = boto3.resource
+
             if settings.ENVIRONMENT == "local":
-                self._clients[service_name] = boto3.resource(
+                self._clients[service_name] = boto3_method(
                     service_name,
                     region_name=settings.AWS_DEFAULT_REGION,
                     aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
                 )
             else:
-                self._clients[service_name] = boto3.resource(
+                self._clients[service_name] = boto3_method(
                     service_name,
                     region_name=settings.AWS_DEFAULT_REGION,
                 )
@@ -35,6 +40,9 @@ class AwsService:
 
     def get_ses(self):
         return self.get_client("ses")
+
+    def get_transcribe(self):
+        return self.get_client("transcribe")
 
     def get_s3_head_object(self, bucket_name: str, object_key: str):
         s3Client = self.get_s3()
