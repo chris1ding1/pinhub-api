@@ -22,6 +22,7 @@ class PinBase(SQLModel):
 
     content: str | None = Field(default=None, max_length=3000)
     url: str | None = Field(default=None, max_length=2048)
+    audio_path: str | None = Field(default=None, max_length=255)
     image_path: str | None = Field(default=None, max_length=255)
     tags: Annotated[List[str], Field(default_factory=list, sa_type=JSONB)]
     visibility: Visibility = Field(default=Visibility.PRIVATE, sa_type=Integer)
@@ -33,7 +34,6 @@ class Pin(PinBase, table=True):
     __tablename__ = "pins"
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     user_id: uuid.UUID = Field(foreign_key="users.id", nullable=False)
-    audio_path: str | None = Field(default=None, max_length=255)
     image_path: str | None = Field(default=None, max_length=255)
     extra: Annotated[Dict[str, Any], Field(default_factory=dict, sa_type=JSON)]
     deleted_at: int | None = Field(default=None)

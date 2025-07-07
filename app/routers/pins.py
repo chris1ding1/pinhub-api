@@ -19,7 +19,7 @@ settings = Settings()
 
 @router.post("/pins")
 async def store(pinFormCreate: PinFormCreate, user: CurrentUser, session: SessionDep, response_model=ApiResponse):
-    if (not pinFormCreate.content or pinFormCreate.content.strip() == "") and (not pinFormCreate.url or pinFormCreate.url.strip() == "") and (not pinFormCreate.image_path or pinFormCreate.image_path.strip() == ""):
+    if (not pinFormCreate.content or pinFormCreate.content.strip() == "") and (not pinFormCreate.url or pinFormCreate.url.strip() == "") and (not pinFormCreate.image_path or pinFormCreate.image_path.strip() == "") and (not pinFormCreate.audio_path or pinFormCreate.audio_path.strip() == ""):
         raise HTTPException(status_code=422)
 
     if pinFormCreate.url:
@@ -34,6 +34,15 @@ async def store(pinFormCreate: PinFormCreate, user: CurrentUser, session: Sessio
         aws_service = get_aws_service()
         image_path_meta = aws_service.get_s3_head_object(settings.ASSET_STORAGE_BUCKET_NAME, pinFormCreate.image_path)
         if not image_path_meta:
+           raise HTTPException(status_code=400)
+
+    if pinFormCreate.audio_path:
+        audio_path_user_id = get_path_segment(pinFormCreate.audio_path, 1)
+        if audio_path_user_id != str(user.id):
+            raise HTTPException(status_code=400)
+        aws_service = get_aws_service()
+        audio_path_meta = aws_service.get_s3_head_object(settings.ASSET_STORAGE_BUCKET_NAME, pinFormCreate.audio_path)
+        if not audio_path_meta:
            raise HTTPException(status_code=400)
 
     pins_service = PinsService(session)
