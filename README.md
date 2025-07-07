@@ -16,6 +16,7 @@ PinHub's backend services, deployed and running on AWS Lambda. This FastAPI-base
 - Amazon Transcribe
 - AWS ACM
 - AWS Amplify
+- AWS for GitHub Actions
 - AWS Lambda
 
 ### Lambda Function Setup
