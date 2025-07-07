@@ -1,5 +1,6 @@
 import uuid
 import filetype
+import httpx
 from uuid import UUID
 
 from botocore.exceptions import ClientError as AwsClientError
@@ -70,16 +71,45 @@ class PinsService:
 
         aws_service = get_aws_service()
         s3_client = aws_service.get_s3()
+        text_content = ""
         try:
             s3_client.Object(bucket_name, file_path).put(
                 Body=file_content,
                 ContentType=file_kind.mime if file_kind else 'application/octet-stream'
             )
+            if file_ext == "webm":
+                transcribe_client = aws_service.get_transcribe()
+                response = transcribe_client.start_transcription_job(
+                    TranscriptionJobName=f"transcribe-{file_name}",
+                    Media={'MediaFileUri': f"s3://{bucket_name}/{file_path}"},
+                    MediaFormat='webm',
+                    IdentifyLanguage=True,
+                )
+                job_name = response['TranscriptionJob']['TranscriptionJobName']
+                while True:
+                    transcribe_job = transcribe_client.get_transcription_job(TranscriptionJobName=job_name)
+                    job_status = transcribe_job['TranscriptionJob']['TranscriptionJobStatus']
+
+                    if job_status == 'COMPLETED':
+                        transcript_file_uri = transcribe_job['TranscriptionJob']['Transcript']['TranscriptFileUri']
+                        with httpx.Client() as httpClient:
+                            transcript_response = httpClient.get(transcript_file_uri)
+                            transcript_data = transcript_response.json()
+                            text_content = transcript_data['results']['transcripts'][0]['transcript']
+                        break
+                    elif job_status == 'FAILED':
+                        print(f"Transcription failed: {transcribe_job['TranscriptionJob'].get('FailureReason', 'Unknown error')}")
+                        text_content = ""
+                        break
+
+                    import time
+                    time.sleep(1)
         except AwsClientError as e:
             print(f"AwsClientError: {e}")
             raise e
 
         return  {
             "name": file_name,
+            "text": text_content,
             "path": file_path,
         }
