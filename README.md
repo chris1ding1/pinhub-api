@@ -1,7 +1,7 @@
 # PinHub API
 
 - 🌐 **Website**: [PinHub](https://pinhub.xyz)
-- [Front-end repository](https://github.com/chris1ding1/pinhub-web)
+- **Front-end repository**: [pinhub-web](https://github.com/chris1ding1/pinhub-web)
 
 ## About the use of AWS Lambda
 
