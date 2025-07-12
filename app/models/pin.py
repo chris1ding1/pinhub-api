@@ -66,3 +66,35 @@ class PinPublic(Pin):
 class PinsPublic(SQLModel):
     data: list[PinPublic]
     count: int
+
+class PinPublicResponse(Pin):
+    id: uuid.UUID
+    content: str | None = None
+    url: str | None = None
+    image_path: str | None = None
+    audio_path: str | None = None
+
+    @computed_field
+    def audio_url(self) -> str | None:
+        if self.audio_path:
+            return urljoin(settings.FRONTEND_ASSET_URL, self.audio_path)
+        return None
+
+    @computed_field
+    def image_url(self) -> str | None:
+        if self.image_path:
+            return urljoin(settings.FRONTEND_ASSET_URL, self.image_path)
+        return None
+
+    @computed_field
+    def url_host(self) -> str | None:
+        if self.url:
+            try:
+                parsed = urlparse(self.url)
+                return parsed.netloc
+            except Exception:
+                return None
+        return None
+
+class PinsPublicResponse(SQLModel):
+    data: list[PinPublicResponse]
