@@ -7,8 +7,8 @@ from fastapi import APIRouter, File, UploadFile, HTTPException
 from app.utils import get_path_segment
 from app.services.aws import get_aws_service
 from app.services.pins import PinsService
-from app.models.common import ApiResponse
-from app.models.pin import PinFormCreate, PinPublic
+from app.models.common import ApiResponse, IndexBase
+from app.models.pin import PinFormCreate, PinPublic, PinsPublicResponse
 from app.deps import CurrentUser, SessionDep
 from app.config import Settings
 
@@ -16,6 +16,17 @@ from app.config import Settings
 router = APIRouter()
 
 settings = Settings()
+
+@router.get("/pins")
+async def index(session: SessionDep, response_model=ApiResponse):
+    pins_service = PinsService(session)
+    pins = pins_service.index_by_public()
+
+    return ApiResponse(
+        data=IndexBase(
+            items=PinsPublicResponse(data=pins).data,
+        )
+    )
 
 @router.post("/pins")
 async def store(pinFormCreate: PinFormCreate, user: CurrentUser, session: SessionDep, response_model=ApiResponse):

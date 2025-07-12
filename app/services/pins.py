@@ -9,7 +9,7 @@ from sqlmodel import func, select, delete
 from app.config import Settings
 from app.deps import SessionDep
 from app.models.user import User
-from app.models.pin import Pin, PinsPublic, PinFormCreate
+from app.models.pin import Pin, PinsPublic, PinFormCreate, Visibility
 from app.services.aws import get_aws_service
 
 settings = Settings()
@@ -17,6 +17,13 @@ settings = Settings()
 class PinsService:
     def __init__(self, session: SessionDep):
         self.session = session
+
+    def index_by_public(self):
+        statement = select(Pin).where(
+            Pin.visibility == Visibility.PUBLIC,
+            Pin.deleted_at.is_(None)
+        )
+        return self.session.exec(statement).all()
 
     def store(self, pinFormCreate: PinFormCreate, user: User) -> Pin:
         db_pin = Pin.model_validate(pinFormCreate, update={"user_id": user.id})
