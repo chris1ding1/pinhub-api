@@ -26,3 +26,10 @@ class IndexResourceData(BaseModel):
 
 class IndexResource(ApiResponse):
     data: IndexResourceData = None
+
+class IndexBase(BaseModel):
+    page: int = 1
+    page_size: int = settings.PAGE_SIZE
+    next_page: int = 0
+    prev_page: int = 0
+    items: List[Any] = []
