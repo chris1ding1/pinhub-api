@@ -58,6 +58,41 @@ class PinsService:
         pins = self.session.exec(statement).all()
         return PinsPublic(data=pins, count=count)
 
+    def store_image_pin(self, image_content: bytes, user: User):
+        file_name = str(uuid.uuid4())
+        file_kind = filetype.guess(image_content)
+        if file_kind is None:
+            file_ext = 'bin'
+        else:
+            file_ext = file_kind.extension
+
+        first_two = file_name[:2]
+        third_fourth = file_name[2:4]
+        file_name = f"{file_name}.{file_ext}"
+        file_path = f"pins/images/{first_two}/{third_fourth}/{file_name}"
+        bucket_name = settings.ASSET_STORAGE_BUCKET_NAME
+
+        print(f"file_path={file_path}, bucket_name={bucket_name}")
+
+        aws_service = get_aws_service()
+        s3_client = aws_service.get_s3()
+        try:
+            s3_client.Object(bucket_name, file_path).put(
+                Body=image_content,
+                ContentType=file_kind.mime if file_kind else 'application/octet-stream'
+            )
+
+            pin_form_create = PinFormCreate(
+                image_path=file_path,
+            )
+            pin = self.store(pin_form_create, user)
+
+            return pin
+        except AwsClientError as e:
+            print(f"AwsClientError: {e}")
+            raise e
+
+
     @staticmethod
     def uplpad_file(file_content: bytes, user: User):
         file_name = str(uuid.uuid4())

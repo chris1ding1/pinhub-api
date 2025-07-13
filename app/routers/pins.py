@@ -81,6 +81,27 @@ async def file_store(
         raise HTTPException(status_code=500)
     return ApiResponse(data=upLoadResult)
 
+@router.post("/pins/image")
+async def store_image_pin(
+    file: Annotated[UploadFile, File()],
+    user: CurrentUser,
+    session: SessionDep,
+    response_model=ApiResponse
+):
+    file_content = await file.read()
+    file_size = len(file_content)
+    if file_size > 5242880:
+        raise HTTPException(status_code=400, detail="File size is too large")
+
+    file_type = filetype.guess(file_content)
+    if file_type is None or file_type.mime not in ["image/jpeg", "image/png"]:
+        raise HTTPException(status_code=400, detail="File type is not supported")
+
+    pins_service = PinsService(session)
+    pin = pins_service.store_image_pin(file_content, user)
+    pin_public = PinPublic.model_validate(pin)
+    return ApiResponse(data=pin_public)
+
 @router.put("/pins/{id}")
 async def update(id: str, user: CurrentUser):
     return ""
