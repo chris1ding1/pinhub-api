@@ -39,7 +39,7 @@ async def store(pinFormCreate: PinFormCreate, user: CurrentUser, session: Sessio
             raise HTTPException(status_code=422)
 
     if pinFormCreate.image_path:
-        image_path_user_id = get_path_segment(pinFormCreate.image_path, 1)
+        image_path_user_id = get_path_segment(pinFormCreate.image_path, 2)
         if image_path_user_id != str(user.id):
             raise HTTPException(status_code=400)
         aws_service = get_aws_service()
@@ -62,18 +62,35 @@ async def store(pinFormCreate: PinFormCreate, user: CurrentUser, session: Sessio
     pin_public = PinPublic.model_validate(pin)
     return ApiResponse(data=pin_public)
 
-@router.post("/pins/file")
-async def file_store(
-    up_file: Annotated[UploadFile, File()],
+@router.post("/pins/upload-image")
+async def upload_image(
+    file: Annotated[UploadFile, File()],
     user: CurrentUser
 ):
-    file_content = await up_file.read()
+    file_content = await file.read()
     file_size = len(file_content)
     if file_size > 5242880:
         raise HTTPException(status_code=400, detail="File size is too large")
 
     file_type = filetype.guess(file_content)
     if file_type is None or file_type.mime not in ["image/jpeg", "image/png"]:
+        raise HTTPException(status_code=400, detail="File type is not supported")
+
+    uploadResult = PinsService.uplpad_file(file_content, user)
+    if uploadResult is False:
+        raise HTTPException(status_code=500)
+    return ApiResponse(data=uploadResult)
+
+@router.post("/pins/upload-audio")
+async def upload_audio(
+    file: Annotated[UploadFile, File()],
+    user: CurrentUser
+):
+    file_content = await file.read()
+
+    file_type = filetype.guess(file_content)
+    print(f"file_content: {file_type.mime}")
+    if file_type is None or file_type.mime != "video/webm":
         raise HTTPException(status_code=400, detail="File type is not supported")
 
     upLoadResult = PinsService.uplpad_file(file_content, user)
@@ -116,20 +133,3 @@ async def destroy(id: UUID, user: CurrentUser, session: SessionDep, response_mod
 
     pins_service.delete_by_id(id)
     return ApiResponse()
-
-@router.post("/pins/audio")
-async def audio_store(
-    audio_file: Annotated[UploadFile, File()],
-    user: CurrentUser
-):
-    file_content = await audio_file.read()
-
-    file_type = filetype.guess(file_content)
-    print(f"file_content: {file_type.mime}")
-    if file_type is None or file_type.mime != "video/webm":
-        raise HTTPException(status_code=400, detail="File type is not supported")
-
-    upLoadResult = PinsService.uplpad_file(file_content, user)
-    if upLoadResult is False:
-        raise HTTPException(status_code=500)
-    return ApiResponse(data=upLoadResult)
