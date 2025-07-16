@@ -106,7 +106,7 @@ class PinsService:
             file_ext = file_kind.extension
 
         file_name = f"{file_name}.{file_ext}"
-        file_path = f"pins/{user.id}/{first_two}/{third_fourth}/{file_name}"
+        file_path = f"pins/{first_two}/{user.id}/{third_fourth}/{file_name}"
         bucket_name = settings.ASSET_STORAGE_BUCKET_NAME
 
         print(f"file_path={file_path}, bucket_name={bucket_name}")
@@ -151,7 +151,6 @@ class PinsService:
             raise e
 
         return  {
-            "name": file_name,
-            "text": text_content,
             "path": file_path,
+            "text": text_content,
         }
