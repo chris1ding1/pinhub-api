@@ -48,7 +48,7 @@ async def store(pinFormCreate: PinFormCreate, user: CurrentUser, session: Sessio
            raise HTTPException(status_code=400)
 
     if pinFormCreate.audio_path:
-        audio_path_user_id = get_path_segment(pinFormCreate.audio_path, 1)
+        audio_path_user_id = get_path_segment(pinFormCreate.audio_path, 2)
         if audio_path_user_id != str(user.id):
             raise HTTPException(status_code=400)
         aws_service = get_aws_service()
